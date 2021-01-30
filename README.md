@@ -1,4 +1,4 @@
-# vuetify
+# Vuetify projekt k záverečnej práci
 
 ## Project setup
 ```
