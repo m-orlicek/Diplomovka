@@ -39,22 +39,22 @@ const router = new Router({
       children: [
         {
           name: "Osobné",
-          path: "projekty-osobne",
+          path: "osobne",
           component: () => import("@/views/projekty/ProjektyOsobne"),
         },
         {
           name: "Katedra",
-          path: "projekty-katedra",
+          path: "katedra",
           component: () => import("@/views/projekty/ProjektyKatedra"),
         },
         {
           name: "Fakulta",
-          path: "projekty-fakulta",
+          path: "fakulta",
           component: () => import("@/views/projekty/ProjektyFakulta"),
         },
         {
           name: "Univerzita",
-          path: "projekty-univerzita",
+          path: "univerzita",
           component: () => import("@/views/projekty/ProjektyUniverzita"),
         },
       ],
@@ -65,23 +65,34 @@ const router = new Router({
       children: [
         {
           name: "Osobné",
-          path: "publikacie-osobne",
+          path: "osobne",
           component: () => import("@/views/publikacie/PublikacieOsobne"),
         },
         {
           name: "Katedra",
-          path: "publikacie-katedra",
+          path: "katedra",
           component: () => import("@/views/publikacie/PublikacieKatedra"),
         },
         {
           name: "Fakulta",
-          path: "publikacie-fakulta",
+          path: "fakulta",
           component: () => import("@/views/publikacie/PublikacieFakulta"),
         },
         {
           name: "Univerzita",
-          path: "publikacie-univerzita",
+          path: "univerzita",
           component: () => import("@/views/publikacie/PublikacieUniverzita"),
+        },
+      ],
+    },
+    {
+      path: "/aplikacie",
+      component: () => import("@/layouts/full-layout/Layout"),
+      children: [
+        {
+          name: "FullCalendar",
+          path: "kalendar",
+          component: () => import("@/views/apps/fullcalendar/FullCalendar"),
         },
       ],
     },

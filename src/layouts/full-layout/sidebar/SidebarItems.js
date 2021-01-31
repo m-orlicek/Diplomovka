@@ -8,22 +8,22 @@ export default [
             {
                 icon: 'mdi-account',
                 title: 'Osobné',
-                to: 'projekty-osobne',
+                to: 'osobne',
             },
             {
                 icon: 'mdi-school',
                 title: 'Katedra',
-                to: 'projekty-katedra',
+                to: 'katedra',
             },
             {
                 icon: 'mdi-home',
                 title: 'Fakulta',
-                to: 'projekty-fakulta',
+                to: 'fakulta',
             },
             {
                 icon: 'mdi-home-modern',
                 title: 'Univerzita',
-                to: 'projekty-univerzita',
+                to: 'univerzita',
             },
         ]
     },
@@ -36,23 +36,36 @@ export default [
             {
                 icon: 'mdi-account',
                 title: 'Osobné',
-                to: 'publikacie-osobne',
+                to: 'osobne',
             },
             {
                 icon: 'mdi-school',
                 title: 'Katedra',
-                to: 'publikacie-katedra',
+                to: 'katedra',
             },
             {
                 icon: 'mdi-home',
                 title: 'Fakulta',
-                to: 'publikacie-fakulta',
+                to: 'fakulta',
             },
             {
                 icon: 'mdi-home-modern',
                 title: 'Univerzita',
-                to: 'publikacie-univerzita',
+                to: 'univerzita',
             },
         ]
-    }
+    },
+    {
+        group: '/aplikacie',
+        model: false,
+        icon: 'mdi-apps',
+        title: 'Aplikácie',
+        children: [
+            {
+                icon: 'mdi-calendar',
+                title: 'Kalendár',
+                to: 'kalendar',
+            },
+        ]
+    },
 ]
