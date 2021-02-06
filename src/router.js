@@ -23,13 +23,13 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      redirect: "starterpage",
+      redirect: "prehlad",
       component: () => import("@/layouts/full-layout/Layout"),
       children: [
         {
-          name: "StarterPage",
-          path: "starterpage",
-          component: () => import("@/views/StarterPage"),
+          name: "Prehlad",
+          path: "prehlad",
+          component: () => import("@/views/prehlad/Prehlad"),
         },
       ],
     },
@@ -38,22 +38,22 @@ const router = new Router({
       component: () => import("@/layouts/full-layout/Layout"),
       children: [
         {
-          name: "Osobné",
+          name: "Osobné projekty",
           path: "osobne",
           component: () => import("@/views/projekty/ProjektyOsobne"),
         },
         {
-          name: "Katedra",
+          name: "Katedra projekty",
           path: "katedra",
           component: () => import("@/views/projekty/ProjektyKatedra"),
         },
         {
-          name: "Fakulta",
+          name: "Fakulta projekty",
           path: "fakulta",
           component: () => import("@/views/projekty/ProjektyFakulta"),
         },
         {
-          name: "Univerzita",
+          name: "Univerzita projekty",
           path: "univerzita",
           component: () => import("@/views/projekty/ProjektyUniverzita"),
         },
@@ -64,37 +64,42 @@ const router = new Router({
       component: () => import("@/layouts/full-layout/Layout"),
       children: [
         {
-          name: "Osobné",
+          name: "Osobné publikácie",
           path: "osobne",
-          component: () => import("@/views/publikacie/PublikacieOsobne"),
+          component: () => import("@/views/publikacie/osobne/PublikacieOsobne"),
         },
         {
-          name: "Katedra",
+          name: "Katedra publikácie",
           path: "katedra",
-          component: () => import("@/views/publikacie/PublikacieKatedra"),
+          component: () => import("@/views/publikacie/katedra/PublikacieKatedra"),
         },
         {
-          name: "Fakulta",
+          name: "Fakulta publikácie",
           path: "fakulta",
-          component: () => import("@/views/publikacie/PublikacieFakulta"),
+          component: () => import("@/views/publikacie/fakulta/PublikacieFakulta"),
         },
         {
-          name: "Univerzita",
+          name: "Univerzita publikácie",
           path: "univerzita",
-          component: () => import("@/views/publikacie/PublikacieUniverzita"),
+          component: () => import("@/views/publikacie/univerzita/PublikacieUniverzita"),
         },
       ],
     },
     {
-      path: "/aplikacie",
+      path: "/vykazy",
       component: () => import("@/layouts/full-layout/Layout"),
       children: [
         {
-          name: "FullCalendar",
-          path: "kalendar",
-          component: () => import("@/views/apps/fullcalendar/FullCalendar"),
+          name: "Výkazy",
+          path: "",
+          component: () => import("@/views/vykazy/Vykazy"),
         },
       ],
+    },
+    {
+      path: "/*",
+      redirect: "prehlad",
+      component: () => import("@/layouts/full-layout/Layout")
     },
     {
       path: "/authentication",

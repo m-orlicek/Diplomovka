@@ -1,5 +1,10 @@
 export default [
     {
+        icon: 'mdi-view-dashboard',
+        title: 'Prehľad',
+        to: 'prehlad'
+    },
+    {
         group: '/projekty',
         model: false,
         icon: 'mdi-clipboard-text',
@@ -56,16 +61,8 @@ export default [
         ]
     },
     {
-        group: '/aplikacie',
-        model: false,
-        icon: 'mdi-apps',
-        title: 'Aplikácie',
-        children: [
-            {
-                icon: 'mdi-calendar',
-                title: 'Kalendár',
-                to: 'kalendar',
-            },
-        ]
-    },
+        icon: 'mdi-calendar-clock',
+        title: 'Výkazy',
+        to: 'vykazy'
+    }
 ]

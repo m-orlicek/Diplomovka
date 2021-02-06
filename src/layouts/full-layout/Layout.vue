@@ -33,7 +33,7 @@ export default {
     source: String,
   },
   data: () => ({
-    expandOnHover: false
+    expandOnHover: true
   }),
 };
 </script>

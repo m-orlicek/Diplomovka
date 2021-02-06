@@ -168,7 +168,7 @@ export default {
     },
   },
   data: () => ({
-    showLogo: true,
+    showLogo: false,
     showSearch: false,
     notifications: [
       {
