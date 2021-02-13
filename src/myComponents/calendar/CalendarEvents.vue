@@ -1,36 +1,23 @@
 <template>
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- Events -->
-  <!-- ----------------------------------------------------------------------------- -->
   <v-row class="fill-height">
     <v-col>
       <v-sheet height="64">
         <v-toolbar flat>
-          <v-btn color=primary @click="dialog = true">Pridať</v-btn>
+          <v-btn color="#28b8ce" rounded dark @click.stop="dialog = true">Pridať záznam</v-btn>
           <v-btn fab text small color="grey darken-2" @click="prev">
             <v-icon small>mdi-chevron-left</v-icon>
           </v-btn>
+          <v-toolbar-title v-if="$refs.calendar">{{ $refs.calendar.title }}</v-toolbar-title>
           <v-btn fab text small color="grey darken-2" @click="next">
             <v-icon small>mdi-chevron-right</v-icon>
           </v-btn>
-          <v-toolbar-title v-if="$refs.calendar">{{ $refs.calendar.title }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">Dnes</v-btn>
-          <v-menu
-              bottom
-              right
-          >
+          <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                  outlined
-                  color="grey darken-2"
-                  v-bind="attrs"
-                  v-on="on"
-              >
+              <v-btn outlined color="grey darken-2" v-bind="attrs" v-on="on">
                 <span>{{ typeToLabel[type] }}</span>
-                <v-icon right>
-                  mdi-menu-down
-                </v-icon>
+                <v-icon right>mdi-menu-down</v-icon>
               </v-btn>
             </template>
             <v-list>
@@ -43,9 +30,6 @@
               <v-list-item @click="type = 'month'">
                 <v-list-item-title>Mesiac</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="type = '4day'">
-                <v-list-item-title>4 dni</v-list-item-title>
-              </v-list-item>
             </v-list>
           </v-menu>
         </v-toolbar>
@@ -54,12 +38,13 @@
         <v-card>
           <v-container>
             <v-form @submit.prevent="addEvent">
-              <v-text-field v-model="name" type="text" label="event name (required)"></v-text-field>
-              <v-text-field v-model="details" type="text" label="detail"></v-text-field>
-              <v-text-field v-model="start" type="date" label="start (required)"></v-text-field>
-              <v-text-field v-model="end" type="date" label="end (required)"></v-text-field>
-              <v-text-field v-model="color" type="color" label="color (click to open color menu)"></v-text-field>
-              <v-btn type="submit" color="primary" class="mr-4" @click.stop="dialog = false">Pridať udalosť</v-btn>
+              <v-text-field v-model="name" type="text" label="Názov"></v-text-field>
+              <v-text-field v-model="details" type="text" label="Detail"></v-text-field>
+              <v-text-field v-model="start" type="date" label="Dátum"></v-text-field>
+              <v-text-field v-model="timeStart" type="time" label="Začiatok"></v-text-field>
+              <v-text-field v-model="timeEnd" type="time" label="Koniec"></v-text-field>
+              <v-text-field v-model="color" type="color" label="Farba"></v-text-field>
+              <v-btn type="submit" color="primary" class="mr-4" @click.stop="dialog = false">Pridať záznam</v-btn>
             </v-form>
           </v-container>
         </v-card>
@@ -67,6 +52,8 @@
       <v-sheet height="600">
         <v-calendar
             locale="sk"
+            first-interval="7"
+            show-week="true"
             ref="calendar"
             v-model="focus"
             color="primary"
@@ -76,78 +63,59 @@
             @click:event="showEvent"
             @click:more="viewDay"
             @click:date="viewDay"
-            @change="updateRange"
         ></v-calendar>
         <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
-          <v-card color="grey lighten-4" min-width="350px" flat>
+          <v-card color="grey lighten-4" :width="350" flat>
             <v-toolbar :color="selectedEvent.color" dark>
-              <v-btn icon>
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
               <v-btn @click="deleteEvent(selectedEvent.id)" icon>
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
-              <v-btn icon>
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
+              <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+              <div class="flex-grow-1"></div>
             </v-toolbar>
             <v-card-text>
-              <form v-if="currentlyEditing !== selectedEvent.id">
-                {{ selectedEvent.details }}
-              </form>
+              <form v-if="currentlyEditing !== selectedEvent.id">{{ selectedEvent.details }}</form>
               <form v-else>
-                <textarea-autosize
-                    v-model="selectedEvent.details"
-                    type="text"
-                    style="width: 100%"
-                    :min-height="100"
-                    placeholder="add note">
-                </textarea-autosize>
+                <v-textarea v-model="selectedEvent.details" type="text" style="width: 100%" :min-height="100" placeholder="add note"></v-textarea>
               </form>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn text color="secondary" @click="selectedOpen = false">Zavrieť</v-btn>
-              <v-btn v-if="currentlyEditing !== selectedEvent.id" text @click.prevent="editEvent(selectedEvent)">Upraviť</v-btn>
-              <v-btn text v-else type="submit" @click.prevent="updateEvent(selectedEvent)">Uložiť</v-btn>
-            </v-card-actions>
+            </v-card-text><v-card-actions>
+            <v-btn text color="secondary" @click="selectedOpen = false">Zavrieť</v-btn>
+            <v-btn v-if="currentlyEditing !== selectedEvent.id" text @click.prevent="editEvent(selectedEvent)">Upraviť</v-btn>
+            <v-btn text v-else type="submit" @click.prevent="updateEvent(selectedEvent)">Uložiť</v-btn>
+          </v-card-actions>
           </v-card>
         </v-menu>
       </v-sheet>
     </v-col>
   </v-row>
-
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "CalendarEvents",
 
   data: () => ({
-    focus: '',
-    dialog: false,
+    today: new Date().toISOString().substr(0, 10),
+    focus: new Date().toISOString().substr(0, 10),
     type: 'month',
-    today: null,
     typeToLabel: {
       month: 'Mesiac',
       week: 'Týždeň',
       day: 'Deň',
-      '4day': '4 Dni',
     },
     name: null,
-    details: null,
     start: null,
-    end: null,
+    details: null,
+    timeStart: null,
+    timeEnd: null,
+    color: '#1976D2', // default event color
+    currentlyEditing: null,
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
     events: [],
-    colors: ['info', 'success', 'warning', 'error', 'indigo', 'pink', 'grey darken-1'],
-    names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+    dialog: false,
   }),
   computed: {
     title () {
@@ -157,22 +125,15 @@ export default {
       }
 
       const startMonth = this.monthFormatter(start)
-      const endMonth = this.monthFormatter(end)
-      const suffixMonth = startMonth === endMonth ? '' : endMonth
 
       const startYear = start.year
-      const endYear = end.year
-      const suffixYear = startYear === endYear ? '' : endYear
 
       const startDay = start.day + this.nth(start.day)
-      const endDay = end.day + this.nth(end.day)
 
       switch (this.type) {
         case 'month':
           return `${startMonth} ${startYear}`
         case 'week':
-        case '4day':
-          return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
         case 'day':
           return `${startMonth} ${startDay} ${startYear}`
       }
@@ -188,6 +149,54 @@ export default {
     this.$refs.calendar.checkChange()
   },
   methods: {
+    async getEvents(){
+      try {
+        const { data } = await axios.get('/api/events'); // Fetch the data
+        this.events = data.events;
+      } catch(e) {
+        console.error(e);
+      }
+    },
+    async addEvent () {
+      if (this.name && this.start && this.timeEnd && this.timeStart) {
+        try {
+          const { data } = await axios.post('/api/events', { data: {
+              name: this.name,
+              details: this.details,
+              start: this.start + " " + this.timeStart,
+              end: this.start + " " + this.timeEnd,
+              color: this.color
+            } });
+          this.events.push(data);
+        } catch(e) {
+          console.error(e);
+        }
+        await this.getEvents()
+        this.name = '',
+            this.details = '',
+            this.start = '',
+            this.timeStart = '',
+            this.timeEnd = '',
+            this.color = ''
+      } else {
+        alert('Musíte vyplniť všetky polia!')
+      }
+    },
+    editEvent (ev) {
+      this.currentlyEditing = ev.id
+    },/*
+    async updateEvent (ev) {
+      await db.collection('calEvent').doc(this.currentlyEditing).update({
+        details: ev.details
+      })
+      this.selectedOpen = false,
+          this.currentlyEditing = null
+    },
+    async deleteEvent (ev) {
+      await db.collection("calEvent").doc(ev).delete()
+      this.selectedOpen = false,
+          this.getEvents()
+    },*/
     viewDay ({ date }) {
       this.focus = date
       this.type = 'day'
@@ -219,7 +228,7 @@ export default {
       }
 
       nativeEvent.stopPropagation()
-    },
+    },/*
     updateRange ({ start, end }) {
       const events = []
 
@@ -246,7 +255,7 @@ export default {
       this.start = start
       this.end = end
       this.events = events
-    },
+    },*/
     nth (d) {
       return d > 3 && d < 21
           ? 'th'
@@ -260,6 +269,14 @@ export default {
           ? `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`
           : `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}`
     },
+  },
+  async created() {
+    try {
+      const { data } = await axios.get('/api/events'); // Fetch the data
+      this.events = data.events;
+    } catch(e) {
+      console.error(e);
+    }
   }
 };
 </script>

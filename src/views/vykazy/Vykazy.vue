@@ -17,6 +17,7 @@ export default {
   name: "Výkazy",
 
   data: () => ({
+    events: [],
     page: {
       title: "Výkazy"
     },
