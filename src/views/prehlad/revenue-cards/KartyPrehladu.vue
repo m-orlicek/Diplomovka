@@ -53,10 +53,10 @@ export default {
         number: "31",
       },
       {
-        title: "Offline Revenue",
+        title: "Počet publikácií celkovo za tri roky",
         iconcolor: "deep-purple accent-2",
         icon: "mdi-library-shelves",
-        number: "$1795",
+        number: "237",
       }
     ],
   }),

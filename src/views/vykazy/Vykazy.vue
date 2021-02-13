@@ -29,7 +29,7 @@ export default {
   }),
   components: {
     CalendarEvents: () =>
-        import("@/components/vuetifyComponents/calendar/CalendarEvents"),
+        import("@/myComponents/calendar/CalendarEvents"),
   }
 };
 </script>

@@ -40,22 +40,22 @@ const router = new Router({
         {
           name: "Osobné projekty",
           path: "osobne",
-          component: () => import("@/views/projekty/ProjektyOsobne"),
+          component: () => import("@/views/projekty/osobne/ProjektyOsobne"),
         },
         {
           name: "Katedra projekty",
           path: "katedra",
-          component: () => import("@/views/projekty/ProjektyKatedra"),
+          component: () => import("@/views/projekty/katedra/ProjektyKatedra"),
         },
         {
           name: "Fakulta projekty",
           path: "fakulta",
-          component: () => import("@/views/projekty/ProjektyFakulta"),
+          component: () => import("@/views/projekty/fakulta/ProjektyFakulta"),
         },
         {
           name: "Univerzita projekty",
           path: "univerzita",
-          component: () => import("@/views/projekty/ProjektyUniverzita"),
+          component: () => import("@/views/projekty/univerzita/ProjektyUniverzita"),
         },
       ],
     },
