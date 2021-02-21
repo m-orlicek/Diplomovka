@@ -41,10 +41,8 @@ export function makeServer({ environment = "development" } = {}) {
             })
 
             this.delete('/events/:id', (schema, request) => {
-                // Return the ID from URL.
-                const id = request.params.id;
-
-                return schema.events.remove(id);
+                const id = request.params.id
+                return schema.events.find(id).destroy()
             })
         },
     })
