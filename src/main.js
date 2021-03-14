@@ -9,11 +9,20 @@ import Vuebar from "vuebar";
 import "./plugins/base";
 import VueSkycons from "vue-skycons";
 
+//google oauth
+import GAuth from 'vue-google-oauth2'
+const gauthOption = {
+  clientId: '760299115145-q6cbkf8cegrngrc8l4bvsarobof3rb91.apps.googleusercontent.com',
+  scope: 'profile email',
+  prompt: 'select_account'
+}
+Vue.use(GAuth, gauthOption)
+
 //mocking
-import { makeServer } from "@/server";
+/*import { makeServer } from "@/server";
 if (process.env.NODE_ENV === "development") {
   makeServer()
-}
+}*/
 
 Vue.use(VueAxios, axios)
 

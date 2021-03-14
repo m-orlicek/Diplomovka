@@ -14,11 +14,11 @@
     <!---USer Area -->
     <v-list-item two-line class="profile-bg">
       <v-list-item-avatar>
-        <img src="../../../assets/images/users/user.jpg"/>
+        <img :src="profilePhoto">
       </v-list-item-avatar>
 
       <v-list-item-content class="white--text">
-        <v-list-item-title>Matúš Orlíček</v-list-item-title>
+        <v-list-item-title>{{ name }}</v-list-item-title>
         <v-list-item-subtitle class="caption white--text">Webdesigner</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -54,7 +54,11 @@ export default {
     }
   },
   data: () => ({
-    items: SidebarItems
+    items: SidebarItems,
+    profilePhoto: null,
+    name: null,
+    isInit: false,
+    isSignIn: false,
   }),
   computed: {
     ...mapState(["SidebarColor", "SidebarBg"]),
@@ -72,8 +76,21 @@ export default {
       this.$emit("update:expandOnHover", !val);
     }
   },
-
-  methods: {}
+  created() {
+    let that = this;
+    let checkGauthLoad = setInterval(function () {
+      that.isInit = that.$gAuth.isInit;
+      that.isSignIn = that.$gAuth.isAuthorized;
+      if (that.isInit) clearInterval(checkGauthLoad);
+    }, 1000);
+  },
+  mounted() {
+    const googleUser = this.$gAuth.GoogleAuth.currentUser.get();
+    if (googleUser) {
+      this.name = googleUser.getBasicProfile().getName();
+      this.profilePhoto = googleUser.getBasicProfile().getImageUrl();
+    }
+  }
 };
 </script>
 <style lang="scss">

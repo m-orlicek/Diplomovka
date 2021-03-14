@@ -23,12 +23,36 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      redirect: "prehlad",
+      redirect: "boxedlogin",
+      component: () => import("@/layouts/blank-layout/Blanklayout"),
+      children: [
+        {
+          name: "BoxedLogin",
+          path: "boxedlogin",
+          component: () => import("@/views/authentication/BoxedLogin"),
+        },
+        {
+          name: "BoxedRegister",
+          path: "boxedregister",
+          component: () => import("@/views/authentication/BoxedRegister"),
+        },
+        {
+          name: "Error",
+          path: "error",
+          component: () => import("@/views/authentication/Error"),
+        },
+      ],
+    },
+    {
+      path: "/prehlad",
       component: () => import("@/layouts/full-layout/Layout"),
+      meta: {
+        requiresAuth: true
+      },
       children: [
         {
           name: "Prehlad",
-          path: "prehlad",
+          path: "",
           component: () => import("@/views/prehlad/Prehlad"),
         },
       ],
@@ -100,37 +124,6 @@ const router = new Router({
       path: "/*",
       redirect: "prehlad",
       component: () => import("@/layouts/full-layout/Layout")
-    },
-    {
-      path: "/authentication",
-      component: () => import("@/layouts/blank-layout/Blanklayout"),
-      children: [
-        {
-          name: "BoxedLogin",
-          path: "boxedlogin",
-          component: () => import("@/views/authentication/BoxedLogin"),
-        },
-        {
-          name: "FullLogin",
-          path: "fulllogin",
-          component: () => import("@/views/authentication/FullLogin"),
-        },
-        {
-          name: "BoxedRegister",
-          path: "boxedregister",
-          component: () => import("@/views/authentication/BoxedRegister"),
-        },
-        {
-          name: "FullRegister",
-          path: "fullregister",
-          component: () => import("@/views/authentication/FullRegister"),
-        },
-        {
-          name: "Error",
-          path: "error",
-          component: () => import("@/views/authentication/Error"),
-        },
-      ],
     },
   ],
 });

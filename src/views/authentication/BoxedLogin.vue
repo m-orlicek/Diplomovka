@@ -1,33 +1,13 @@
 <template>
   <v-container id="login" class="fill-height justify-center" tag="section">
     <v-row justify="center">
-      <v-col lg="11" sm="8" xl="7">
+      <v-col lg="8" sm="8" xl="7">
         <v-card class="elevation-4">
           <v-row>
-            <v-col lg="7" class="info d-none d-md-flex align-center justify-center">
-              <div class="d-none d-sm-block">
-                <div class="d-flex align-center pa-10">
-                  <div>
-                    <h2
-                      class="display-1 white--text font-weight-medium"
-                    >Elegant Design with unlimited features, built with love</h2>
-                    <h6
-                      class="subtitle-1 mt-4 white--text op-5 font-weight-regular"
-                    >Wrappixel helps developers to build organized and well-coded admin dashboards full of beautiful and feature rich modules.</h6>
-                    <v-btn class="mt-4 text-capitalize" x-large outlined color="white">Learn More</v-btn>
-                  </div>
-                </div>
-              </div>
-            </v-col>
-            <v-col lg="5">
-              <div class="pa-7 pa-sm-12">
-                <img src="@/assets/images/logo-icon.png" />
-                <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Sign in</h2>
-                <h6 class="subtitle-1">
-                  Don't have an account?
-                  <a href="#/pages/boxedregister" class>Sign Up</a>
-                </h6>
-
+            <v-col>
+              <div class="pa-7 pa-sm-12" >
+                <img class="center" src="@/assets/images/ukf-logo-login.png" alt="UKF Logo"/>
+                <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Prihlásenie do portálu UKF</h2>
                 <v-form ref="form" v-model="valid" lazy-validation action="/dashboards/analytical">
                   <v-text-field
                     v-model="email"
@@ -41,7 +21,7 @@
                     v-model="password"
                     :counter="10"
                     :rules="passwordRules"
-                    label="Password"
+                    label="Heslo"
                     required
                     outlined
                     :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
@@ -51,12 +31,12 @@
                   <div class="d-block d-sm-flex align-center mb-4 mb-sm-0">
                     <v-checkbox
                       v-model="checkbox"
-                      :rules="[v => !!v || 'You must agree to continue!']"
-                      label="Remember me?"
+                      :rules="[v => !!v || 'Musíte súhlasiť pre pokračovanie!']"
+                      label="Zapamätať si ma?"
                       required
                     ></v-checkbox>
                     <div class="ml-auto">
-                      <a href="javascript:void(0)" class="link">Forgot pwd?</a>
+                      <a href="javascript:void(0)" class="link">Zabudli ste heslo?</a>
                     </div>
                   </div>
                   <v-btn
@@ -66,23 +46,29 @@
                     class="mr-4"
                     submit
                     @click="submit"
-                  >Sign In</v-btn>
+                  >Prihlásiť</v-btn>
                 </v-form>
                 <div class="text-center mt-6">
-                  <v-chip pill class="mr-2">
-                    <v-avatar left>
-                      <v-btn color="blue lighten-1" class="white--text">
-                        <v-icon>mdi-twitter</v-icon>
+                      <v-btn
+                          :disabled="!isInit"
+                          color="info"
+                          block
+                          class="mr-4"
+                          v-if="!isSignIn"
+                          @click="handleClickSignIn"
+                      >
+                        <v-icon color="white">mdi-google</v-icon>Prihlásiť pomocou účtu Google
                       </v-btn>
-                    </v-avatar>Twitter
-                  </v-chip>
-                  <v-chip pill>
-                    <v-avatar left>
-                      <v-btn color="teal lighten-2" class="white--text">
-                        <v-icon>mdi-github</v-icon>
-                      </v-btn>
-                    </v-avatar>Github
-                  </v-chip>
+                  <v-btn
+                      :disabled="!isInit"
+                      color="info"
+                      block
+                      class="mr-4"
+                      v-if="isSignIn"
+                      @click="handleClickSignOut"
+                  >
+                    <v-icon color="white">mdi-google</v-icon>Prihlásiť pomocou účtu Google
+                  </v-btn>
                 </div>
               </div>
             </v-col>
@@ -98,6 +84,8 @@ export default {
   name: "BoxedLogin",
 
   data: () => ({
+    isInit: false,
+    isSignIn: false,
     valid: true,
     password: "",
     show1: false,
@@ -117,9 +105,70 @@ export default {
     submit() {
       this.$refs.form.validate();
       if (this.$refs.form.validate(true)) {
-        this.$router.push({ path: "/dashboards/analytical" });
+        this.$router.push({ path: "/prehlad" });
       }
+    },
+
+    async handleClickSignIn() {
+      try {
+        const googleUser = await this.$gAuth.signIn();
+        const authCode = await this.$gAuth.getAuthCode();
+        const response = await this.$http.post('http://lumen.api/api/login', { code: authCode, redirect_uri: 'postmessage' })
+        console.log('response', response);
+        if (!googleUser) {
+          return null;
+        }
+        console.log("googleUser", googleUser);
+        console.log("getId", googleUser.getId());
+        console.log("getBasicProfile", googleUser.getBasicProfile().getImageUrl());
+        console.log("getAuthResponse", googleUser.getAuthResponse());
+        console.log("getAuthResponse", this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse());
+        this.isSignIn = this.$gAuth.isAuthorized;
+        if (this.$gAuth.isAuthorized) {
+          await this.$router.push({path: "/prehlad"});
+        }
+      } catch (error) {
+        //on fail do something
+        console.error(error);
+        return null;
+      }
+    },
+
+    async handleClickSignOut() {
+      try {
+        await this.$gAuth.signOut();
+        this.isSignIn = this.$gAuth.isAuthorized;
+        console.log("isSignIn", this.$gAuth.isAuthorized);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
+
+  created() {
+    let that = this;
+    let checkGauthLoad = setInterval(function () {
+      that.isInit = that.$gAuth.isInit;
+      that.isSignIn = that.$gAuth.isAuthorized;
+      if (that.isInit) clearInterval(checkGauthLoad);
+    }, 1000);
+  },
+
+  beforeUpdate() {
+    if (this.isSignIn) {
+      console.log("beforeUpdate isSignIn", this.isSignIn);
+      //this.$router.push({path: "/prehlad"});
     }
   }
 };
 </script>
+
+<style>
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
+  height: 200px;
+}
+</style>

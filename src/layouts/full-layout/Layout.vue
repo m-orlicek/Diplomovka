@@ -4,7 +4,6 @@
 
     <v-main>
       <v-container fluid class="page-wrapper">
-
         <router-view />
       </v-container>
     </v-main>
