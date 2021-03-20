@@ -157,7 +157,7 @@ export default {
   beforeUpdate() {
     if (this.isSignIn) {
       console.log("beforeUpdate isSignIn", this.isSignIn);
-      //this.$router.push({path: "/prehlad"});
+      this.$router.push({path: "/prehlad"});
     }
   }
 };
