@@ -3,7 +3,7 @@
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
     <v-row>
       <v-col cols="12" sm="12">
-          <CalendarEvents></CalendarEvents>
+          <VykazyCards></VykazyCards>
       </v-col>
     </v-row>
   </v-container>
@@ -26,8 +26,8 @@ export default {
     ]
   }),
   components: {
-    CalendarEvents: () =>
-        import("@/myComponents/calendar/CalendarEvents"),
+    VykazyCards: () =>
+        import("@/myComponents/vykazy/VykazyCards"),
   }
 };
 </script>

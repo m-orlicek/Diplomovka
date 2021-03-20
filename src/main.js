@@ -18,12 +18,6 @@ const gauthOption = {
 }
 Vue.use(GAuth, gauthOption)
 
-//mocking
-/*import { makeServer } from "@/server";
-if (process.env.NODE_ENV === "development") {
-  makeServer()
-}*/
-
 Vue.use(VueAxios, axios)
 
 Vue.use(VueSkycons, {
