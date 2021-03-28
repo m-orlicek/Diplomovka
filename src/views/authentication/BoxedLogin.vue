@@ -18,27 +18,16 @@
                     outlined
                   ></v-text-field>
                   <v-text-field
-                    v-model="password"
-                    :counter="10"
-                    :rules="passwordRules"
-                    label="Heslo"
-                    required
-                    outlined
-                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                    :type="show1 ? 'text' : 'password'"
-                  ></v-text-field>
-
-                  <div class="d-block d-sm-flex align-center mb-4 mb-sm-0">
-                    <v-checkbox
-                      v-model="checkbox"
-                      :rules="[v => !!v || 'Musíte súhlasiť pre pokračovanie!']"
-                      label="Zapamätať si ma?"
+                      v-model="password"
+                      :rules="passwordRules"
+                      label="Heslo"
                       required
-                    ></v-checkbox>
-                    <div class="ml-auto">
-                      <a href="javascript:void(0)" class="link">Zabudli ste heslo?</a>
-                    </div>
-                  </div>
+                      outlined
+                      :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                      :type="show1 ? 'text' : 'password'"
+                      hint="Heslo musí obsahovať aspoň 10 znakov."
+                      @click:append="show1 = !show1"
+                  ></v-text-field>
                   <v-btn
                     :disabled="!valid"
                     color="info"
@@ -90,13 +79,12 @@ export default {
     password: "",
     show1: false,
     passwordRules: [
-      v => !!v || "Password is required",
-      v => (v && v.length <= 10) || "Password must be less than 10 characters"
+      v => !!v || "Zadajte heslo.",
     ],
     email: "",
     emailRules: [
-      v => !!v || "E-mail is required",
-      v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+      v => !!v || "Zadajte e-mail",
+      v => /.+@.+\..+/.test(v) || "Zadajte e-mail v správnom formáte."
     ],
     checkbox: false
   }),
@@ -157,7 +145,7 @@ export default {
   beforeUpdate() {
     if (this.isSignIn) {
       console.log("beforeUpdate isSignIn", this.isSignIn);
-      this.$router.push({path: "/prehlad"});
+      //this.$router.push({path: "/prehlad"});
     }
   }
 };

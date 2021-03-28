@@ -76,11 +76,6 @@ const router = new Router({
           path: "fakulta",
           component: () => import("@/views/projekty/fakulta/ProjektyFakulta"),
         },
-        {
-          name: "Univerzita projekty",
-          path: "univerzita",
-          component: () => import("@/views/projekty/univerzita/ProjektyUniverzita"),
-        },
       ],
     },
     {
@@ -101,11 +96,6 @@ const router = new Router({
           name: "Fakulta publikácie",
           path: "fakulta",
           component: () => import("@/views/publikacie/fakulta/PublikacieFakulta"),
-        },
-        {
-          name: "Univerzita publikácie",
-          path: "univerzita",
-          component: () => import("@/views/publikacie/univerzita/PublikacieUniverzita"),
         },
       ],
     },

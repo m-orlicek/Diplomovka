@@ -2,7 +2,7 @@ export default [
     {
         icon: 'mdi-view-dashboard',
         title: 'Prehľad',
-        to: 'prehlad'
+        to: '/prehlad'
     },
     {
         group: '/projekty',
@@ -24,11 +24,6 @@ export default [
                 icon: 'mdi-home',
                 title: 'Fakulta',
                 to: 'fakulta',
-            },
-            {
-                icon: 'mdi-home-modern',
-                title: 'Univerzita',
-                to: 'univerzita',
             },
         ]
     },
@@ -53,16 +48,11 @@ export default [
                 title: 'Fakulta',
                 to: 'fakulta',
             },
-            {
-                icon: 'mdi-home-modern',
-                title: 'Univerzita',
-                to: 'univerzita',
-            },
         ]
     },
     {
         icon: 'mdi-calendar-clock',
         title: 'Výkazy',
-        to: 'vykazy'
+        to: '/vykazy'
     }
 ]
