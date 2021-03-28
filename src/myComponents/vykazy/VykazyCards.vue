@@ -112,22 +112,22 @@ export default {
 
 <style scoped>
 .uzavrety {
-  background: #f1eb78;
+  background: #fffa93;
   margin: 3px !important;
 }
 
 .otvoreny {
-  background: #ea6e6e;
+  background: #ffa5a5;
   margin: 3px !important;
 }
 
 .schvaleny {
-  background: #58e501;
+  background: #7dfd79;
   margin: 3px !important;
 }
 
 .prazdny {
-  background-color: #93caf8;
+  background-color: #bce6ff;
   margin: 3px !important;
 }
 </style>

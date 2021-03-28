@@ -139,14 +139,14 @@
       <template v-slot:activator="{ on }">
         <v-btn dark icon v-on="on" class="mr-1">
           <v-avatar size="40">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+            <img :src="profilePhoto">
           </v-avatar>
         </v-btn>
       </template>
 
       <v-list>
-        <v-list-item v-for="(item, i) in userprofile" :key="i" @click="href">
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        <v-list-item @click="href">
+          <v-list-item-title>Logout</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -170,6 +170,7 @@ export default {
   data: () => ({
     showLogo: false,
     showSearch: false,
+    profilePhoto: null,
     notifications: [
       {
         title: "Launch Admin",
@@ -230,13 +231,6 @@ export default {
         time: "12:30AM",
       },
     ],
-    userprofile: [
-      { title: "My Contacts" },
-      { title: "My Balance" },
-      { title: "Inbox" },
-      { title: "Account Setting" },
-      { title: "Logout" },
-    ],
     href() {
       return undefined;
     },
@@ -253,10 +247,14 @@ export default {
     showhideLogo: function() {
       this.showLogo = !this.showLogo;
     },
-    searchbox: function() {
-      this.showSearch = !this.showSearch;
-    },
   },
+  mounted() {
+    const googleUser = this.$gAuth.GoogleAuth.currentUser.get();
+    if (googleUser) {
+      this.name = googleUser.getBasicProfile().getName();
+      this.profilePhoto = googleUser.getBasicProfile().getImageUrl();
+    }
+  }
 };
 </script>
 

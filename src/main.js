@@ -31,5 +31,6 @@ new Vue({
   vuetify,
   store,
   router,
+  baseURL: 'https://some-domain.com/api/',
   render: (h) => h(App),
 }).$mount("#app");

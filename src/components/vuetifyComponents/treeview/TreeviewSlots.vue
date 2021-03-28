@@ -63,7 +63,7 @@ export default {
               }],
             },
             {
-              name: 'favicon.ico',
+              name: 'favicon.png',
               file: 'png',
             },
             {

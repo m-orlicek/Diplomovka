@@ -19,7 +19,6 @@
 
       <v-list-item-content class="white--text">
         <v-list-item-title>{{ name }}</v-list-item-title>
-        <v-list-item-subtitle class="caption white--text">Webdesigner</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <!---USer Area -->
