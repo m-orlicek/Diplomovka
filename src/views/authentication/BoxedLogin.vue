@@ -8,7 +8,7 @@
               <div class="pa-7 pa-sm-12" >
                 <img class="center" src="@/assets/images/ukf-logo-login.png" alt="UKF Logo"/>
                 <h2 class="font-weight-bold mt-4 blue-grey--text text--darken-2">Prihlásenie do portálu UKF</h2>
-                <v-form ref="form" v-model="valid" lazy-validation action="/dashboards/analytical">
+                <v-form v-model="valid" lazy-validation>
                   <v-text-field
                     v-model="email"
                     :rules="emailRules"
@@ -34,31 +34,9 @@
                     block
                     class="mr-4"
                     submit
-                    @click="submit"
+                    @click="onSubmit"
                   >Prihlásiť</v-btn>
                 </v-form>
-                <div class="text-center mt-6">
-                      <v-btn
-                          :disabled="!isInit"
-                          color="info"
-                          block
-                          class="mr-4"
-                          v-if="!isSignIn"
-                          @click="handleClickSignIn"
-                      >
-                        <v-icon color="white">mdi-google</v-icon>Prihlásiť pomocou účtu Google
-                      </v-btn>
-                  <v-btn
-                      :disabled="!isInit"
-                      color="info"
-                      block
-                      class="mr-4"
-                      v-if="isSignIn"
-                      @click="handleClickSignOut"
-                  >
-                    <v-icon color="white">mdi-google</v-icon>Prihlásiť pomocou účtu Google
-                  </v-btn>
-                </div>
               </div>
             </v-col>
           </v-row>
@@ -88,64 +66,12 @@ export default {
     ],
     checkbox: false
   }),
-  computed: {},
   methods: {
-    submit() {
-      this.$refs.form.validate();
-      if (this.$refs.form.validate(true)) {
-        this.$router.push({ path: "/prehlad" });
-      }
-    },
-
-    async handleClickSignIn() {
-      try {
-        const googleUser = await this.$gAuth.signIn();
-        const authCode = await this.$gAuth.getAuthCode();
-        const response = await this.$http.post('http://lumen.api/api/login', { code: authCode, redirect_uri: 'postmessage' })
-        console.log('response', response);
-        if (!googleUser) {
-          return null;
-        }
-        console.log("googleUser", googleUser);
-        console.log("getId", googleUser.getId());
-        console.log("getBasicProfile", googleUser.getBasicProfile().getImageUrl());
-        console.log("getAuthResponse", googleUser.getAuthResponse());
-        console.log("getAuthResponse", this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse());
-        this.isSignIn = this.$gAuth.isAuthorized;
-        if (this.$gAuth.isAuthorized) {
-          await this.$router.push({path: "/prehlad"});
-        }
-      } catch (error) {
-        //on fail do something
-        console.error(error);
-        return null;
-      }
-    },
-
-    async handleClickSignOut() {
-      try {
-        await this.$gAuth.signOut();
-        this.isSignIn = this.$gAuth.isAuthorized;
-        console.log("isSignIn", this.$gAuth.isAuthorized);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-  },
-
-  created() {
-    let that = this;
-    let checkGauthLoad = setInterval(function () {
-      that.isInit = that.$gAuth.isInit;
-      that.isSignIn = that.$gAuth.isAuthorized;
-      if (that.isInit) clearInterval(checkGauthLoad);
-    }, 1000);
-  },
-
-  beforeUpdate() {
-    if (this.isSignIn) {
-      console.log("beforeUpdate isSignIn", this.isSignIn);
-      //this.$router.push({path: "/prehlad"});
+    onSubmit() {
+      this.$store.dispatch("login", {
+        email: this.email,
+        password: this.password
+      });
     }
   }
 };
