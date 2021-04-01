@@ -14,11 +14,11 @@
     <!---USer Area -->
     <v-list-item two-line class="profile-bg">
       <v-list-item-avatar>
-        <img :src="profilePhoto">
+        <!--<img :src="profilePhoto">-->
       </v-list-item-avatar>
 
       <v-list-item-content class="white--text">
-        <v-list-item-title>{{ name }}</v-list-item-title>
+        <v-list-item-title>{{ getMeno }}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <!---USer Area -->
@@ -53,11 +53,7 @@ export default {
     }
   },
   data: () => ({
-    items: SidebarItems,
-    profilePhoto: null,
-    name: null,
-    isInit: false,
-    isSignIn: false,
+    items: SidebarItems
   }),
   computed: {
     ...mapState(["SidebarColor", "SidebarBg"]),
@@ -68,26 +64,14 @@ export default {
       set(val) {
         this.$store.commit("SET_SIDEBAR_DRAWER", val);
       }
+    },
+    getMeno() {
+      return this.$store.getters.userFullname;
     }
   },
   watch: {
     "$vuetify.breakpoint.smAndDown"(val) {
       this.$emit("update:expandOnHover", !val);
-    }
-  },
-  created() {
-    let that = this;
-    let checkGauthLoad = setInterval(function () {
-      that.isInit = that.$gAuth.isInit;
-      that.isSignIn = that.$gAuth.isAuthorized;
-      if (that.isInit) clearInterval(checkGauthLoad);
-    }, 1000);
-  },
-  mounted() {
-    const googleUser = this.$gAuth.GoogleAuth.currentUser.get();
-    if (googleUser) {
-      this.name = googleUser.getBasicProfile().getName();
-      this.profilePhoto = googleUser.getBasicProfile().getImageUrl();
     }
   }
 };

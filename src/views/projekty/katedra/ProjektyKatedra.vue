@@ -85,8 +85,7 @@ export default {
     katedry: [],
     fakulty: [],
     zamestnanci: [],
-    zoznamProjektov: [],
-    konecnyZoznam: []
+    zoznamProjektov: []
   }),
   methods: {
     nastavComponent() {
@@ -121,7 +120,7 @@ export default {
             }
           }.bind(this));
 
-      this.upravZoznam(this.zoznamProjektov);
+      this.konecnyZoznam = this.zoznamProjektov
     },
     getZoznamProjektov(epc_id) {
       const data = {
@@ -134,15 +133,7 @@ export default {
             })
           }.bind(this));
     },
-    upravZoznam(zoznam) {
-      console.log(zoznam)
-      this.konecnyZoznam = zoznam
-      console.log(this.konecnyZoznam)
-    }
-  },
-  computed:{
-    upravimeSiZoznam() {
-      console.log("upravime  si")
+    upravZoznam() {
       var uzPridaneProjektId = {};
       var zoznam = this.konecnyZoznam;
       zoznam = zoznam.filter(function(currentObject) {
@@ -168,11 +159,8 @@ export default {
       return zoznam.sort(compare)
     }
   },
-  watch: {
-    konecnyZoznam: function() {
-      console.log("watch")
-      console.log(this.konecnyZoznam)
-    }
+  computed:{
+    konecnyZoznam: []
   },
   created(){
     axios.get('https://app.vykony.ki.fpv.ukf.sk/get-epc-full-fakulty')

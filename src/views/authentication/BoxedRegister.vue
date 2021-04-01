@@ -16,31 +16,31 @@
                       outlined
                   ></v-text-field>
                   <v-text-field
-                      v-model="name"
-                      :rules="nameRules"
+                      v-model="meno"
+                      :rules="menoRules"
                       label="Meno"
                       class="mt-4"
                       required
                       outlined
                   ></v-text-field>
                   <v-text-field
-                      v-model="surname"
-                      :rules="surnameRules"
+                      v-model="priezvisko"
+                      :rules="priezviskoRules"
                       label="Priezvisko"
                       class="mt-4"
                       required
                       outlined
                   ></v-text-field>
                   <v-text-field
-                      v-model.number="osobneCislo"
-                      label="Osobné číslo"
-                      :rules="cisloRules"
+                      v-model="titulZa"
+                      label="Titul za menom"
                       class="mt-4"
                       outlined
                   ></v-text-field>
                   <v-text-field
-                      v-model="titulZa"
-                      label="Titul za menom"
+                      v-model.number="osobneCislo"
+                      label="Osobné číslo"
+                      :rules="cisloRules"
                       class="mt-4"
                       outlined
                   ></v-text-field>
@@ -53,8 +53,8 @@
                       outlined
                   ></v-text-field>
                   <v-text-field
-                      v-model="password"
-                      :rules="passwordRules"
+                      v-model="heslo"
+                      :rules="hesloRules"
                       label="Heslo"
                       required
                       outlined
@@ -70,7 +70,6 @@
                       item-text="name"
                       item-value="id"
                       :items="katedry"
-                      @change="ulozKatedru()"
                       outlined
                       required
                   ></v-combobox>
@@ -80,7 +79,7 @@
                       block
                       class="mr-4"
                       submit
-                      @click="submit"
+                      @click="onSubmit"
                   >Registrovať</v-btn>
                 </v-form>
               </div>
@@ -96,12 +95,12 @@
 import axios from "axios";
 
 export default {
-  name: "BoxedLogin",
+  name: "BoxedRegister",
   data: () => ({
     valid: false,
-    password: "",
+    heslo: "",
     show1: false,
-    passwordRules: [
+    hesloRules: [
       v => !!v || "Zadajte heslo.",
       v => (v && v.length >= 10) || "Heslo musí obsahovať aspoň 10 znakov."
     ],
@@ -110,14 +109,13 @@ export default {
       v => !!v || "Zadajte e-mail",
       v => /.+@.+\..+/.test(v) || "E-mailová adresa je zadaná v zlom formáte."
     ],
-    checkbox: false,
-    name: "",
-    nameRules: [
+    meno: "",
+    menoRules: [
       v => !!v || "Zadajte meno.",
       v => (v && v.length >= 3) || "Meno musí obsahovať aspoň 3 znaky."
     ],
-    surname: "",
-    surnameRules: [
+    priezvisko: "",
+    priezviskoRules: [
       v => !!v || "Zadajte priezvisko.",
       v => (v && v.length >= 3) || "Priezvisko musí obsahovať aspoň 3 znaky."
     ],
@@ -134,21 +132,23 @@ export default {
     katedryFull: []
   }),
   methods: {
-    submit() {
-      this.$refs.form.validate();
-      if (this.$refs.form.validate(true)) {
-        this.$router.push({ path: "/pages/boxedlogin" });
-      }
+    onSubmit() {
+      this.$store.dispatch("signup", {
+        ttl_pred: this.titulPred,
+        meno: this.meno,
+        priezvisko: this.priezvisko,
+        ttl_za: this.titulZa,
+        osobne_cislo: this.osobneCislo,
+        email: this.email,
+        heslo: this.heslo,
+        katedra: this.katedryFull[this.katedry.indexOf(this.katedra)]
+      });
     },
     requiredKatedra(value) {
       if (value instanceof Array && value.length === 0) {
         return 'Vyberte katedru.';
       }
       return !!value || 'Vyberte katedru.';
-    },
-    ulozKatedru() {
-      console.log(this.katedry.indexOf(this.katedra))
-      console.log(this.katedryFull[this.katedry.indexOf(this.katedra)])
     }
   },
   created(){

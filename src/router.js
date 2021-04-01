@@ -2,7 +2,11 @@ import Vue from "vue";
 import Router from "vue-router";
 import goTo from "vuetify/es5/services/goto";
 
+import store from "@/store/store";
+
 Vue.use(Router);
+
+store.dispatch("AutoLogin");
 
 const router = new Router({
   mode: "history",
@@ -46,8 +50,12 @@ const router = new Router({
     {
       path: "/prehlad",
       component: () => import("@/layouts/full-layout/Layout"),
-      meta: {
-        requiresAuth: true
+      beforeEnter(to, from, next) {
+        if (store.state.idToken) {
+          next();
+        } else {
+          next("boxedlogin");
+        }
       },
       children: [
         {
@@ -60,6 +68,13 @@ const router = new Router({
     {
       path: "/projekty",
       component: () => import("@/layouts/full-layout/Layout"),
+      beforeEnter(to, from, next) {
+        if (store.state.idToken) {
+          next();
+        } else {
+          next("boxedlogin");
+        }
+      },
       children: [
         {
           name: "Osobné projekty",
@@ -81,6 +96,13 @@ const router = new Router({
     {
       path: "/publikacie",
       component: () => import("@/layouts/full-layout/Layout"),
+      beforeEnter(to, from, next) {
+        if (store.state.idToken) {
+          next();
+        } else {
+          next("boxedlogin");
+        }
+      },
       children: [
         {
           name: "Osobné publikácie",
@@ -102,6 +124,13 @@ const router = new Router({
     {
       path: "/vykazy",
       component: () => import("@/layouts/full-layout/Layout"),
+      beforeEnter(to, from, next) {
+        if (store.state.idToken) {
+          next();
+        } else {
+          next("boxedlogin");
+        }
+      },
       children: [
         {
           name: "Výkazy",
