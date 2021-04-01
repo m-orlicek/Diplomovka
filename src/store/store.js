@@ -15,7 +15,8 @@ export default new Vuex.Store({
         meno: null,
         priezvisko: null,
         ttl_pred: null,
-        ttl_za: null
+        ttl_za: null,
+        axios_config: null
     },
     mutations: {
         SET_SIDEBAR_DRAWER(state, payload) {
@@ -36,13 +37,21 @@ export default new Vuex.Store({
             state.priezvisko = null;
             state.ttl_pred = null;
             state.ttl_za = null;
+            state.axios_config = null;
         },
         saveUser(state, userData) {
             state.meno = userData.meno;
             state.priezvisko = userData.priezvisko;
             state.ttl_pred = userData.ttl_pred;
             state.ttl_za = userData.ttl_za;
-        }
+        },
+        setConfig(state, data) {
+            state.axios_config = {
+                headers: {
+                    Authorization: 'Bearer ' + data.token
+                }
+            }
+        },
     },
     actions: {
         // eslint-disable-next-line no-unused-vars
@@ -83,6 +92,9 @@ export default new Vuex.Store({
                 .then(res => {
                     localStorage.setItem("token", res.data.access_token);
                     commit("authUser", {
+                        token: res.data.access_token
+                    });
+                    commit("setConfig", {
                         token: res.data.access_token
                     });
                     axios
@@ -135,6 +147,9 @@ export default new Vuex.Store({
                 priezvisko: priezvisko,
                 ttl_pred: ttl_pred,
                 ttl_za: ttl_za,
+            });
+            commit("setConfig", {
+                token: token
             });
         }
     },
