@@ -1,81 +1,83 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <v-row>
+    <v-row v-show="zobrazPrehladProjektov">
       <v-col cols="12" sm="12">
         <BaseCard heading="Hodnoty: Model Rady Kvality UKF">
-          <TableSimpleDense></TableSimpleDense>
+          <TableProjektyOsobne @projektEmit="projektEmitMethod" :zoznam="zoznamProjektov"></TableProjektyOsobne>
         </BaseCard>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="12" sm="12" lg="6">
-        <PieChartHodnotenie></PieChartHodnotenie>
+    <v-row v-show="zobrazPrehladProjektov">
+      <v-col class="d-flex" cols="12" sm="12" lg="6">
+        <ColumnChartProjekty :zoznam="zoznamProjektov"></ColumnChartProjekty>
       </v-col>
-      <v-col cols="12" sm="12" lg="6">
-        <PieChartPriemer></PieChartPriemer>
+      <v-col class="d-flex" cols="12" sm="12" lg="6">
+        <PieChartPodielOsobne :projekt="projektEmit"></PieChartPodielOsobne>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import TableSimpleDense from "@/views/projekty/osobne/table-data/TableProjektyOsobne";
-import PieChartHodnotenie from "@/views/projekty/osobne/apexcharts/PieChartHodnotenie";
-import PieChartPriemer from "@/views/projekty/osobne/apexcharts/PieChartPriemer";
+import TableProjektyOsobne from "@/myComponents/projekty/TableProjektyOsobne";
+import PieChartPodielOsobne from "@/myComponents/projekty/PieChartPodielOsobne";
+import ColumnChartProjekty from "@/myComponents/projekty/ColumnChartProjekty";
 import axios from "axios";
+import store from "@/store/store";
 
 export default {
   name: "ProjektyOsobne",
   components: {
-    PieChartHodnotenie,
-    TableSimpleDense,
-    PieChartPriemer
+    TableProjektyOsobne,
+    PieChartPodielOsobne,
+    ColumnChartProjekty
   },
   data: () => ({
     page: {
       title: "Projekty"
     },
-    elementVisible: false,
     breadcrumbs: [
       {
         text: "Osobný prehľad",
         disabled: true
       }
-    ]
+    ],
+    projektEmit: null,
+    component: null,
+    zobrazPrehladProjektov: false,
+    zvolenaFakulta: null,
+    zvolenaKatedra: null,
+    katedry: [],
+    fakulty: [],
+    zoznamProjektov: []
   }),
   methods: {
-    zobrazKatedry() {
-      let fakulta = this.zvolenaFakulta
-      const data = {
-        "fakulta": fakulta
-      }
-      this.vybranaFakulta = true;
-      axios.post('https://app.vykony.ki.fpv.ukf.sk/get-epc-full-katedry', data)
-          .then(function( response ){
-            let k = response.data.katedry;
-            var index, newKatedry = [];
-            for (index = 0; index < k.length; ++index) {
-              newKatedry.push(k[index].substring(6));
-            }
-            this.katedry = newKatedry;
-          }.bind(this));
-    }
+    projektEmitMethod (value) {
+      this.projektEmit = value;
+    },
+    nastavComponent() {
+      this.component = "ColumnChartProjekty"
+    },
   },
-  created(){
-    axios.get('https://app.vykony.ki.fpv.ukf.sk/get-epc-full-fakulty')
+  async created(){
+    // eslint-disable-next-line no-unused-vars
+    let epc_id = null;
+    await axios.get('https://app.vykony.ki.fpv.ukf.sk/get-full-user-parameters', store.state.axios_config)
         .then(function( response ){
-          let f = response.data.fakulty;
-          f = f.filter((i) => {
-            let first3Letters = i.substring(0,3)
-            return first3Letters === "UKF"
-          });
-          var index, newFakulty = [];
-          for (index = 0; index < f.length; ++index) {
-            newFakulty.push(f[index].substring(3));
-          }
-          this.fakulty = newFakulty;
+          epc_id = response.data.osobne_cislo;
         }.bind(this));
+    // TODO: zmenit na epc_id
+    const data = {
+      "epc_id": 116998
+    };
+    await axios.post('https://app.vykony.ki.fpv.ukf.sk/get-projekty-zamestnanca', data)
+        .then(function( response ){
+          this.zoznamProjektov = response.data.zoznam;
+          this.projektEmit = response.data.zoznam[0];
+        }.bind(this));
+    this.zobrazPrehladProjektov = true;
+    this.nastavComponent();
   }
 };
 </script>

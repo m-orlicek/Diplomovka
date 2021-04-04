@@ -1,11 +1,14 @@
 <template>
-  <v-card>
+  <v-card class="flex-grow-1">
     <v-toolbar flat>
       <v-toolbar-title>Počet aktívnych projektov v rokoch</v-toolbar-title>
     </v-toolbar>
     <v-divider></v-divider>
-    <div class="mt-4 pa-4">
-      <vue-apex-charts type="bar" :options="options" :series="series"
+    <div>
+      <vue-apex-charts
+          type="bar"
+          :options="options"
+          :series="series"
       ></vue-apex-charts>
     </div>
   </v-card>
@@ -24,6 +27,7 @@ export default {
         chart: {
           id: 'vuechart-example'
         },
+        colors: '#ffa300',
         xaxis: {
           categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
         }
@@ -72,8 +76,6 @@ export default {
       let end = Math.max.apply(Math, this.zoznam.map(function(o) {
         return o.year_end;
       }));
-      console.log(start);
-      console.log(end);
       for (var index = start; index <= end; ++index) {
         roky.push(index)
       }

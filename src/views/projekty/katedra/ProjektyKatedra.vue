@@ -50,7 +50,6 @@
 
 <script>
 import TableProjekty from "@/myComponents/projekty/TableProjekty";
-import PieChartPriemer from "@/views/projekty/katedra/apexcharts/PieChartPriemer";
 import ColumnChartProjekty from "@/myComponents/projekty/ColumnChartProjekty";
 import axios from "axios";
 
@@ -58,27 +57,25 @@ export default {
   name: "ProjektyKatedra",
   components: {
     TableProjekty,
-    PieChartPriemer,
     ColumnChartProjekty
   },
   data: () => ({
     page: {
       title: "Projekty"
     },
-    component: null,
-    vybranaFakulta: false,
-    zobrazPrehladProjektov: false,
-    zvolenaFakulta: null,
-    zvolenaKatedra: null,
     breadcrumbs: [
       {
         text: "Katedrový prehľad",
         disabled: true
       }
     ],
+    component: null,
+    vybranaFakulta: false,
+    zobrazPrehladProjektov: false,
+    zvolenaFakulta: null,
+    zvolenaKatedra: null,
     katedry: [],
     fakulty: [],
-    zamestnanci: [],
     zoznamProjektov: []
   }),
   methods: {
