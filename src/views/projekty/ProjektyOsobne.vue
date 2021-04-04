@@ -46,10 +46,6 @@ export default {
     projektEmit: null,
     component: null,
     zobrazPrehladProjektov: false,
-    zvolenaFakulta: null,
-    zvolenaKatedra: null,
-    katedry: [],
-    fakulty: [],
     zoznamProjektov: []
   }),
   methods: {

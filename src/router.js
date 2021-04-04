@@ -79,17 +79,17 @@ const router = new Router({
         {
           name: "Osobné projekty",
           path: "osobne",
-          component: () => import("@/views/projekty/osobne/ProjektyOsobne"),
+          component: () => import("@/views/projekty/ProjektyOsobne"),
         },
         {
           name: "Katedra projekty",
           path: "katedra",
-          component: () => import("@/views/projekty/katedra/ProjektyKatedra"),
+          component: () => import("@/views/projekty/ProjektyKatedra"),
         },
         {
           name: "Fakulta projekty",
           path: "fakulta",
-          component: () => import("@/views/projekty/fakulta/ProjektyFakulta"),
+          component: () => import("@/views/projekty/ProjektyFakulta"),
         },
       ],
     },
