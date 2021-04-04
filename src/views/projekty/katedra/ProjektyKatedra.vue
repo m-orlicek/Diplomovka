@@ -1,7 +1,6 @@
 <template>
   <v-container fluid class="down-top-padding">
     <BaseBreadcrumb :title="page.title" :icon="page.icon" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-    <v-container fluid>
       <v-row align="center">
         <v-col
             class="d-flex"
@@ -27,45 +26,40 @@
               v-model="zvolenaKatedra"
               solo
               v-show="vybranaFakulta"
-              @change="getZamestnanciKatedry()"
+              @change="getZoznamProjektov"
           ></v-select>
         </v-col>
-        <v-col
-            class="d-flex"
-            cols="12"
-            sm="6"
-        >
-          <v-btn @click="zobrazPrehladProjektov = true; nastavComponent()">Zobraz prehľad</v-btn>
-        </v-col>
       </v-row>
-    </v-container>
     <v-row v-show="zobrazPrehladProjektov">
       <v-col cols="12" sm="12">
         <BaseCard heading="Hodnoty: Model Rady Kvality UKF">
-          <TableSimpleDense :zoznam="upravimeSiZoznam"></TableSimpleDense>
+          <TableProjekty :zoznam="zoznamProjektov"></TableProjekty>
         </BaseCard>
       </v-col>
     </v-row>
     <v-row v-show="zobrazPrehladProjektov">
       <v-col cols="12" sm="12" lg="6">
-        <component :is="component" :zoznam="upravimeSiZoznam"></component>
+        <component :is="component" :zoznam="zoznamProjektov"></component>
+      </v-col>
+      <v-col cols="12" sm="12" lg="6">
+        <component :is="component" :zoznam="zoznamProjektov"></component>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import TableSimpleDense from "@/views/projekty/katedra/table-data/TableProjektyKatedra";
+import TableProjekty from "@/myComponents/projekty/TableProjekty";
 import PieChartPriemer from "@/views/projekty/katedra/apexcharts/PieChartPriemer";
-import ApexColumnCharts from "@/views/projekty/katedra/apexcharts/ApexColumnCharts";
+import ColumnChartProjekty from "@/myComponents/projekty/ColumnChartProjekty";
 import axios from "axios";
 
 export default {
   name: "ProjektyKatedra",
   components: {
-    TableSimpleDense,
+    TableProjekty,
     PieChartPriemer,
-    ApexColumnCharts
+    ColumnChartProjekty
   },
   data: () => ({
     page: {
@@ -89,7 +83,7 @@ export default {
   }),
   methods: {
     nastavComponent() {
-      this.component = "ApexColumnCharts"
+      this.component = "ColumnChartProjekty"
     },
     zobrazKatedry() {
       this.katedry = [];
@@ -104,63 +98,21 @@ export default {
             }
           }.bind(this));
     },
-    async getZamestnanciKatedry() {
-      this.zamestnanci = [];
+    async getZoznamProjektov(katedra) {
+      this.zoznamProjektov = [];
       const data = {
-        "katedra": "UKF" + this.zvolenaFakulta + this.zvolenaKatedra
+        "pracovisko": "UKF" + this.zvolenaFakulta + katedra
       }
-      await axios.post('https://app.vykony.ki.fpv.ukf.sk/get-zamestnanci-katedry', data)
-          .then(function( response ){
-            for (var index = 0; index < response.data.zamestnanci.length; ++index) {
-              this.zamestnanci.push(response.data.zamestnanci[index].epc_id);
-            }
-            this.zoznamProjektov = [];
-            for (const value of this.zamestnanci) {
-              this.getZoznamProjektov(value)
-            }
-          }.bind(this));
-
-      this.konecnyZoznam = this.zoznamProjektov
-    },
-    getZoznamProjektov(epc_id) {
-      const data = {
-        "epc_id": epc_id
-      }
-      axios.post('https://app.vykony.ki.fpv.ukf.sk/get-projekty-zamestnanca', data)
+      await axios.post('https://app.vykony.ki.fpv.ukf.sk/get-projekty-pracovisko', data)
           .then(function( response ){
             response.data.zoznam.forEach((value) => {
               this.zoznamProjektov.push(value);
-            })
+            });
           }.bind(this));
-    },
-    upravZoznam() {
-      var uzPridaneProjektId = {};
-      var zoznam = this.konecnyZoznam;
-      zoznam = zoznam.filter(function(currentObject) {
-        if (currentObject.projekt_id in uzPridaneProjektId) {
-          return false;
-        } else {
-          uzPridaneProjektId[currentObject.projekt_id] = true;
-          return true;
-        }
-      });
-      function compare(a, b) {
-        const titleA = a.title.toUpperCase();
-        const titleB = b.title.toUpperCase();
-
-        let comparison = 0;
-        if (titleA > titleB) {
-          comparison = 1;
-        } else if (titleA < titleB) {
-          comparison = -1;
-        }
-        return comparison;
-      }
-      return zoznam.sort(compare)
+      console.log(this.zoznamProjektov);
+      this.zobrazPrehladProjektov = true;
+      this.nastavComponent();
     }
-  },
-  computed:{
-    konecnyZoznam: []
   },
   created(){
     axios.get('https://app.vykony.ki.fpv.ukf.sk/get-epc-full-fakulty')
