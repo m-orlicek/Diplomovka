@@ -107,17 +107,17 @@ const router = new Router({
         {
           name: "Osobné publikácie",
           path: "osobne",
-          component: () => import("@/views/publikacie/osobne/PublikacieOsobne"),
+          component: () => import("@/views/publikacie/PublikacieOsobne"),
         },
         {
           name: "Katedra publikácie",
           path: "katedra",
-          component: () => import("@/views/publikacie/katedra/PublikacieKatedra"),
+          component: () => import("@/views/publikacie/PublikacieKatedra"),
         },
         {
           name: "Fakulta publikácie",
           path: "fakulta",
-          component: () => import("@/views/publikacie/fakulta/PublikacieFakulta"),
+          component: () => import("@/views/publikacie/PublikacieFakulta"),
         },
       ],
     },

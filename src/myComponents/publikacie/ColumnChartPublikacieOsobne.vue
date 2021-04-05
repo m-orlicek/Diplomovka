@@ -1,7 +1,7 @@
 <template>
   <v-card class="flex-grow-1">
     <v-toolbar flat>
-      <v-toolbar-title>Počet publikácií v konkrétnych kategóriách</v-toolbar-title>
+      <v-toolbar-title>Počet publikácií v rokoch</v-toolbar-title>
     </v-toolbar>
     <v-divider></v-divider>
     <div>
@@ -30,12 +30,6 @@ export default {
         colors: '#ffa300',
         xaxis: {
           categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-        },
-        plotOptions: {
-          bar: {
-            borderRadius: 4,
-            horizontal: true,
-          }
         }
       },
       series: [{
@@ -46,15 +40,26 @@ export default {
   },
   methods: {
     updateChart() {
-      var kategorie = this.getYears;
+      var roky = this.getYears;
       this.options = {
         xaxis: {
-          categories: Object.keys(kategorie)
+          categories: roky
         }
       };
       this.series = [{
-        data: Object.values(kategorie)
+        data: this.publikaciePreRoky
       }]
+    },
+    getPublicationsForYears(start, end) {
+      this.publikaciePreRoky = [];
+      for (var index = start; index <= end; ++index) {
+        var count = 0;
+        for(var i = 0; i < this.zoznam.length; ++i){
+          if(this.zoznam[i].rok_vydania === index)
+            count++;
+        }
+        this.publikaciePreRoky.push(count)
+      }
     }
   },
   watch: {
@@ -64,14 +69,18 @@ export default {
   },
   computed: {
     getYears() {
-      var zoznam = this.zoznam;
-      var counts = {};
-
-      for (var i = 0; i < zoznam.length; i++) {
-        var kat = zoznam[i].kategoria;
-        counts[kat] = counts[kat] ? counts[kat] + 1 : 1;
+      var roky = [];
+      let start = Math.min.apply(Math, this.zoznam.map(function(o) {
+        return o.rok_vydania;
+      }));
+      let end = Math.max.apply(Math, this.zoznam.map(function(o) {
+        return o.rok_vydania;
+      }));
+      for (var index = start; index <= end; ++index) {
+        roky.push(index)
       }
-      return counts;
+      this.getPublicationsForYears(start, end);
+      return roky;
     }
   },
   components: {

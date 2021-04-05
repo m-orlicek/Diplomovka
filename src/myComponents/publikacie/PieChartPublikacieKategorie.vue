@@ -1,7 +1,7 @@
 <template>
     <v-card class="flex-grow-1">
         <v-toolbar flat >
-            <v-toolbar-title style="white-space: normal;">Počet publikácií v kategóriách</v-toolbar-title>
+            <v-toolbar-title style="white-space: normal;">Počet publikácií v hlavných kategóriách</v-toolbar-title>
         </v-toolbar>
         <v-divider></v-divider>
         <div class="mt-4 pa-4">
