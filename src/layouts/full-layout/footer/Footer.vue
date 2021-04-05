@@ -1,7 +1,7 @@
 <template>
     <v-footer app class="footerpart" inset>
       <v-col>
-        <span>© {{ new Date().getFullYear() }} — Matúš Orlíček</span>
+        <span>© {{ (new Date()).getFullYear() }} — Matúš Orlíček</span>
       </v-col>
     </v-footer>
 </template>

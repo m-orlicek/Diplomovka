@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import TheRevenueCards from "@/views/prehlad/revenue-cards/KartyPrehladu";
+import TheRevenueCards from "@/myComponents/karty-prehladu/KartyPrehladu";
 
 export default {
   name: "Prehlad",

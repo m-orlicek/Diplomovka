@@ -61,7 +61,7 @@ export default {
         }.bind(this));
     // TODO: zmenit na epc_id
     const data = {
-      "epc_id": 68170
+      "epc_id": 116998
     };
     await axios.post('https://app.vykony.ki.fpv.ukf.sk/get-epc-zamestnanca', data)
         .then(function( response ){
