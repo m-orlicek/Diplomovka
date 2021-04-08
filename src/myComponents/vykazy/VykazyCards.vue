@@ -1,23 +1,24 @@
 <template>
   <div>
     <div>
-      <BaseCardVykazy  @pridatMesiac="onClickChild" heading="Výkazy podľa rokov">
+      <BaseCard heading="Výkazy podľa rokov">
         <v-container
-            v-for="item in dochadzka"
+            v-for="item in spracovanaDochadzka"
             :key="item.rok"
             fluid>
           <v-subheader class="theme--light.v-subheader">
             {{ item.rok }}
           </v-subheader>
           <v-row no-gutters>
-            <v-col v-for="n in item.mesiace"
+            <v-col v-for="n in 12"
                    :key="n"
                    cols="1"
                    sm="6"
                    md="4"
                    lg="2">
               <v-card
-                  class="pa-2 rounded-lg otvoreny"
+                  class="pa-2 rounded-lg"
+                  :class="{ vytvoreny: vytvoreny(item.rok, n), nevytvoreny: !vytvoreny(item.rok, n) }"
                   elevation="5"
                   outlined
                   tile
@@ -27,23 +28,30 @@
                     <v-list-item-title class="headline mb-1">
                       {{ n }}
                     </v-list-item-title>
-                    <v-list-item-subtitle>stav</v-list-item-subtitle>
+                    <v-list-item-subtitle>Otvorený</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
                 <v-card-actions>
-                  <v-btn style="background-color: #e0e0e0"
+                  <v-btn v-if="vytvoreny(item.rok, n)" style="background-color: #e0e0e0"
                          rounded
                          elevation="2"
                          @click="zobrazMesiac(n, item.rok)"
                   >
                     Detail
                   </v-btn>
+                  <v-btn v-else style="background-color: #e0e0e0"
+                         rounded
+                         elevation="2"
+                         @click="vytvorMesiac(n, item.rok)"
+                  >
+                    Pridať
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
         </v-container>
-      </BaseCardVykazy>
+      </BaseCard>
     </div>
     <div v-show="prehladMesiaca">
       <BaseCard :heading="header" :addBtn="true">
@@ -196,51 +204,12 @@
                 </v-container>
               </v-card>
             </v-dialog>
-            <!-- dialog pre pridanie dochadzky-->
-            <v-dialog v-model="dialogDochadzka" max-width="650">
-              <v-card>
-                <v-container>
-                  <template>
-                    <v-form v-model="valid">
-                      <v-container>
-                        <v-row>
-                        <v-text-field
-                            v-model.number = pocetDni
-                            label="Počet dní"
-                            outlined
-                            :rules="pocetDniRule"
-                        ></v-text-field>
-                      </v-row>
-                        <v-row>
-                          <v-text-field
-                              v-model.number = pridatMesiac
-                              label="Mesiac"
-                              outlined
-                              :rules="pridatMesiacRule"
-                          ></v-text-field>
-                        </v-row>
-                        <v-row>
-                          <v-text-field
-                              v-model.number = pridatRok
-                              label="Rok"
-                              outlined
-                              :rules="pridatRokRule"
-                          ></v-text-field>
-                        </v-row>
-                        <v-btn :disabled="!valid" class="mt-2" color="#28b8ce" rounded dark @click.stop="vytvorDochadzku">Vytvor dochádzku</v-btn>
-                      </v-container>
-                    </v-form>
-                  </template>
-                </v-container>
-              </v-card>
-            </v-dialog>
             <v-simple-table dense class="border">
               <template v-slot:default>
                 <thead>
                 <tr>
                   <th class="text-left">Deň</th>
-                  <th class="text-left">Začiatok činnosti</th>
-                  <th class="text-left">Koniec činnosti</th>
+                  <th class="text-left">Pracovný čas</th>
                   <th class="text-left">Počet činností</th>
                   <th class="text-left">Detail činnosti</th>
                 </tr>
@@ -248,12 +217,7 @@
                 <tbody>
                 <tr v-for="x in cinnosti" :key="x.den">
                   <td>{{ x.den }}</td>
-                  <td v-if="x.zac_min < 10">{{ x.zac_hod }}:0{{ x.zac_min }}</td>
-                  <td v-else>{{ x.zac_hod }}:{{ x.zac_min }}</td>
-                  <td v-if="x.kon_min < 10">{{ x.kon_hod }}:0{{ x.kon_min}}</td>
-                  <td v-else>{{ x.kon_hod }}:{{ x.kon_min}}</td>
-                  <td>{{ x.cinnosti.length }}</td>
-                  <td>
+                  <td>{{ getPracovnyCas(x.zac_hod, x.zac_min, x.kon_hod, x.kon_min) }}
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon
@@ -268,6 +232,9 @@
                       </template>
                       <span>Upraviť pracovnú dobu</span>
                     </v-tooltip>
+                  </td>
+                  <td>{{ x.cinnosti.length }}</td>
+                  <td>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon
@@ -353,6 +320,7 @@ export default {
       v => !!v || "Vyberte aktivitu"
     ],
     dochadzka: [],
+    spracovanaDochadzka: [],
     cinnosti: [],
     cinnostiPreMesiac: [],
     aktivityZoznam: [],
@@ -369,6 +337,20 @@ export default {
       this.dialogUprava = true;
       this.den = den;
     },
+    getPracovnyCas(zac_hod, zac_min, kon_hod, kon_min){
+      var cas = '';
+      if (zac_min < 10)  {
+        cas = zac_hod + ":0" + zac_min + " - ";
+      } else {
+        cas = zac_hod + ":" + zac_min + " - ";
+      }
+      if (kon_min < 10)  {
+        cas = cas + kon_hod + ":0" + kon_min;
+      } else {
+        cas = cas + kon_hod + ":" + kon_min;
+      }
+      return cas;
+    },
     prepareDetail(cinnosti) {
       this.dialogDetail = true;
       this.cinnostiPreMesiac = cinnosti;
@@ -383,9 +365,14 @@ export default {
         return aktivity.kon_hod + ":0" + aktivity.kon_min;
       } else return aktivity.kon_hod + ":" + aktivity.kon_min;
     },
-    onClickChild (value) {
-      console.log("button clicked");
-      this.dialogDochadzka = value;
+    vytvoreny(rok, mesiac){
+      if (this.dochadzka.some(x => (x.rok === rok) && (x.mesiac === mesiac))) {
+        console.log("true");
+        return true;
+      } else {
+        console.log("false");
+        return false;
+      }
     },
     async zobrazMesiac(mesiac, rok) {
       this.prehladMesiaca = true;
@@ -407,6 +394,7 @@ export default {
           .then(function( response ){
             dochadzka = response.data.list;
           }.bind(this));
+      this.dochadzka = dochadzka;
       this.spracujMesiaceDochadzky(dochadzka);
     },
     spracujMesiaceDochadzky(dochadzka) {
@@ -416,7 +404,7 @@ export default {
         const filtered = dochadzka.reduce((a, o) => (o.rok === unique[index] && a.push(o.mesiac), a), []);
         spracovanaDochadzka.push({"rok": unique[index], "mesiace": filtered});
       }
-      this.dochadzka = spracovanaDochadzka;
+      this.spracovanaDochadzka = spracovanaDochadzka;
     },
     async upravPracovnuDobu() {
       this.zac_min = this.zac_hod.substring(3);
@@ -506,11 +494,12 @@ export default {
           }.bind(this));
       this.nacitajMesiaceDochadzky();
     },
-    async vytvorDochadzku(){
+    async vytvorMesiac(mesiac, rok){
+      var pocetDni = new Date(rok, mesiac, 0).getDate();
       const data = {
-        "rok": this.pridatRok,
-        "mesiac": this.pridatMesiac,
-        "pocet_dni": this.pocetDni
+        "rok": rok,
+        "mesiac": mesiac,
+        "pocet_dni": pocetDni
       };
       await axios.post('https://app.vykony.ki.fpv.ukf.sk/vytvor-mesiac-dochadzky', data, store.state.axios_config)
           .then(function( response ){
@@ -522,24 +511,22 @@ export default {
   },
   created() {
     this.nacitajMesiaceDochadzky();
+    if (!this.dochadzka.some(e => e.rok === new Date().getFullYear())) {
+      this.vytvorMesiac(1, new Date().getFullYear());
+    }
     this.getAktivity();
   }
 }
 </script>
 
 <style scoped>
-.otvoreny {
-  background: #ffa5a5;
+.nevytvoreny {
+  background: rgba(204, 0, 0, 0.64);
   margin: 3px !important;
 }
 
-.uzavrety {
-  background: #7dfd79;
-  margin: 3px !important;
-}
-
-.prazdny {
-  background-color: #bce6ff;
+.vytvoreny {
+  background: #4BB543;
   margin: 3px !important;
 }
 </style>
