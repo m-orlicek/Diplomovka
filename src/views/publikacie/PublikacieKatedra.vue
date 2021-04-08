@@ -31,7 +31,7 @@
             v-model="rok_vydania"
             solo
             v-show="vybranaKatedra"
-            @change="getZoznamProjektov"
+            @change="getZoznamPublikacii"
         ></v-select>
       </v-col>
     </v-row>
@@ -43,7 +43,7 @@
       </v-col>
     </v-row>
     <v-row v-show="zobrazPrehladProjektov">
-      <v-col class="d-flex"  cols="12" sm="12" lg="6">
+      <v-col class="d-flex" cols="12" sm="12" lg="6">
         <component :is="component" :zoznam="zoznamPublikacii"></component>
       </v-col>
       <v-col class="d-flex" cols="12" sm="12" lg="6">
@@ -99,7 +99,7 @@ export default {
       if (this.zvolenaFakulta === "FFA") roky.push(1966);
       this.roky = roky;
       this.vybranaKatedra = true;
-      if (this.rok_vydania != null) this.getZoznamProjektov();
+      if (this.rok_vydania != null) this.getZoznamPublikacii();
     },
     zobrazKatedry() {
       this.katedry = [];
@@ -114,7 +114,7 @@ export default {
             }
           }.bind(this));
     },
-    async getZoznamProjektov() {
+    async getZoznamPublikacii() {
       this.zoznamPublikacii = [];
       const data = {
         "pracovisko": "UKF" + this.zvolenaFakulta + this.zvolenaKatedra,
@@ -127,7 +127,6 @@ export default {
               this.zoznamPublikacii.push(value);
             });
           }.bind(this));
-      console.log(this.zoznamPublikacii);
       this.zobrazPrehladProjektov = true;
       this.nastavComponent();
     }

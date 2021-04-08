@@ -28,6 +28,11 @@
                       hint="Heslo musí obsahovať aspoň 10 znakov."
                       @click:append="show1 = !show1"
                   ></v-text-field>
+                  <h6 class="subtitle-1">
+                    Ešte nie ste zaregistrovaný?
+                    <v-spacer></v-spacer>
+                    <a href="/boxedregister" class>Registrácia</a>
+                  </h6>
                   <v-btn
                     :disabled="!valid"
                     color="info"

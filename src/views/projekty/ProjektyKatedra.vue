@@ -41,8 +41,8 @@
       <v-col cols="12" sm="12" lg="6">
         <component :is="component" :zoznam="zoznamProjektov"></component>
       </v-col>
-      <v-col cols="12" sm="12" lg="6">
-        <component :is="component" :zoznam="zoznamProjektov"></component>
+      <v-col class="d-flex" cols="12" sm="12" lg="6">
+        <PieChartSkratkyProjekty :zoznam="zoznamProjektov"></PieChartSkratkyProjekty>
       </v-col>
     </v-row>
   </v-container>
@@ -50,6 +50,7 @@
 
 <script>
 import TableProjekty from "@/myComponents/projekty/TableProjekty";
+import PieChartSkratkyProjekty from "@/myComponents/projekty/PieChartSkratkyProjekty";
 import ColumnChartProjekty from "@/myComponents/projekty/ColumnChartProjekty";
 import axios from "axios";
 
@@ -57,7 +58,8 @@ export default {
   name: "ProjektyKatedra",
   components: {
     TableProjekty,
-    ColumnChartProjekty
+    ColumnChartProjekty,
+    PieChartSkratkyProjekty
   },
   data: () => ({
     page: {
@@ -106,7 +108,6 @@ export default {
               this.zoznamProjektov.push(value);
             });
           }.bind(this));
-      console.log(this.zoznamProjektov);
       this.zobrazPrehladProjektov = true;
       this.nastavComponent();
     }

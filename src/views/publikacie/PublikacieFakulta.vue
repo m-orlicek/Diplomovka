@@ -12,7 +12,7 @@
             label="Fakulta"
             v-model="zvolenaFakulta"
             solo
-            @change="nastavRoky();"
+            @change="nastavRoky(); rok_vydania = null;"
         ></v-select>
       </v-col>
       <v-col
@@ -26,14 +26,14 @@
             v-model="rok_vydania"
             solo
             v-show="vybranaFakulta"
-            @change="getZoznamPublikacii(); progress = true;"
+            @change="getZoznamPublikacii(); progress = true; getPocty();"
         ></v-select>
       </v-col>
-        <v-progress-linear
-            v-show="progress"
-            indeterminate
-            color="primary"
-        ></v-progress-linear>
+      <v-progress-linear
+          v-show="progress"
+          indeterminate
+          color="primary"
+      ></v-progress-linear>
     </v-row>
     <v-row v-show="zobrazPrehladPublikacii">
       <v-col cols="12" sm="12">
@@ -43,11 +43,17 @@
       </v-col>
     </v-row>
     <v-row v-show="zobrazPrehladPublikacii">
-      <v-col class="d-flex"  cols="12" sm="12" lg="6">
-        <component :is="component" :zoznam="zoznamPublikacii"></component>
-      </v-col>
       <v-col class="d-flex" cols="12" sm="12" lg="6">
-        <PieChartPublikacieKategorie :zoznam="zoznamPublikacii"></PieChartPublikacieKategorie>
+        <component class="mt-3 mb-3" :is="component" :zoznam="zoznamPublikacii"></component>
+      </v-col>
+      <v-col class="d-flex" cols="12" sm="12" lg="6" style="flex-direction:column">
+        <v-col>
+          <PieChartPublikacieKategorie :zoznam="zoznamPublikacii"></PieChartPublikacieKategorie>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col>
+          <PieChartPublikaciePocetPreKatedry :katedry="katedry" :pocty="pocty"></PieChartPublikaciePocetPreKatedry>
+        </v-col>
       </v-col>
     </v-row>
   </v-container>
@@ -55,16 +61,18 @@
 
 <script>
 import TablePublikacie from "@/myComponents/publikacie/TablePublikacie";
-import ColumnChartPublikacie from "@/myComponents/publikacie/ColumnChartPublikacie";
-import PieChartPublikacieKategorie from "@/myComponents/publikacie/PieChartPublikacieKategorie"
+import ColumnChartPublikacieFakulta from "@/myComponents/publikacie/ColumnChartPublikacieFakulta";
+import PieChartPublikacieKategorie from "@/myComponents/publikacie/PieChartPublikacieKategorie";
+import PieChartPublikaciePocetPreKatedry from "@/myComponents/publikacie/PieChartPublikaciePocetPreKatedry";
 import axios from "axios";
 
 export default {
   name: "PublikacieFakulta",
   components: {
     TablePublikacie,
-    ColumnChartPublikacie,
-    PieChartPublikacieKategorie
+    ColumnChartPublikacieFakulta,
+    PieChartPublikacieKategorie,
+    PieChartPublikaciePocetPreKatedry
   },
   data: () => ({
     page: {
@@ -84,11 +92,13 @@ export default {
     roky: [],
     rok_vydania: null,
     fakulty: [],
+    katedry: [],
+    pocty: [],
     zoznamPublikacii: []
   }),
   methods: {
     nastavComponent() {
-      this.component = "ColumnChartPublikacie"
+      this.component = "ColumnChartPublikacieFakulta"
     },
     nastavRoky(){
       const currentYear = (new Date()).getFullYear();
@@ -97,6 +107,7 @@ export default {
       if (this.zvolenaFakulta === "FFA") roky.push(1966);
       this.roky = roky;
       this.vybranaFakulta = true;
+      this.getKatedry();
     },
     async getZoznamPublikacii() {
       var zoznam = [];
@@ -114,6 +125,32 @@ export default {
       this.zobrazPrehladPublikacii = true;
       this.nastavComponent();
       this.progress = false;
+    },
+    getKatedry() {
+      this.katedry = [];
+      const data = {
+        "fakulta": this.zvolenaFakulta
+      }
+      this.vybranaFakulta = true;
+      axios.post('https://app.vykony.ki.fpv.ukf.sk/get-epc-full-katedry', data)
+          .then(function( response ){
+            for (var index = 0; index < response.data.katedry.length; ++index) {
+              this.katedry.push(response.data.katedry[index].substring(6));
+            }
+          }.bind(this));
+    },
+    getPocty(){
+      this.pocty = [];
+      for (var index=0; index<this.katedry.length;index++) {
+        const data = {
+          "pracovisko": "UKF" + this.zvolenaFakulta + this.katedry[index],
+          "rok_vydania": this.rok_vydania,
+        }
+        axios.post('https://app.vykony.ki.fpv.ukf.sk/get-epc-pracovisko', data)
+            .then(function (response) {
+              this.pocty.push(response.data.zoznam.length);
+            }.bind(this));
+      }
     }
   },
   created(){

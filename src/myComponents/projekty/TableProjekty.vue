@@ -4,6 +4,8 @@
       <v-data-table
           :headers="headers"
           :items="zoznam"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
           :items-per-page="5"
           class="elevation-1"
       ></v-data-table>
@@ -16,6 +18,8 @@ export default {
   name: "TableProjekty",
   props: ['zoznam'],
   data: () => ({
+    sortBy: 'year_from',
+    sortDesc: true,
     headers: [
       { text: 'Projekt ID', align: 'start', sortable: false, value: 'projekt_id'},
       { text: 'Názov', value: 'title' },
