@@ -91,28 +91,44 @@
                 <v-container>
                   <template>
                     <v-form v-model="valid">
-                      <v-container v-for="aktivity in cinnostiPreMesiac" :key="aktivity.id">
+                      <v-container>
                         <v-row>
-                          <v-text-field
-                              :value=getZacCas(aktivity)
-                              label="Začiatok činnosti"
-                              :rules="casRules"
-                              required
-                          ></v-text-field>
-                        </v-row>
-                        <v-row>
-                          <v-text-field
-                              :value=getKonCas(aktivity)
-                              label="Koniec činnosti"
-                              :rules="casRules"
-                              required
-                          ></v-text-field>
+                          <v-time-picker
+                              v-model="zac_hod"
+                              format="24hr"
+                              min="6:00"
+                              max="22:00"
+                              keepContentAlive = false
+                              :allowed-minutes="allowedStep"
+                              class="mr-7"
+                          ></v-time-picker>
+                          <v-row>
+                            <v-text-field
+                                v-model="zac_hod"
+                                :rules="casRules"
+                                v-show="false"
+                            ></v-text-field>
+                          </v-row>
+                          <v-time-picker
+                              v-model="kon_hod"
+                              format="24hr"
+                              min="6:00"
+                              max="22:00"
+                              :allowed-minutes="allowedStep"
+                          ></v-time-picker>
+                          <v-row>
+                            <v-text-field
+                                v-model="kon_hod"
+                                :rules="casRules"
+                                v-show="false"
+                            ></v-text-field>
+                          </v-row>
                         </v-row>
                         <v-row>
                           <v-select
                               :items="aktivityZoznam"
                               item-text="aktivita"
-                              :v-model="aktivita"
+                              v-model="aktivita"
                               label="Činnost"
                               outlined
                               :rules="aktivitaRule"
@@ -120,7 +136,7 @@
                         </v-row>
                         <v-row>
                           <v-text-field
-                              :value=aktivity.popis
+                              v-model="popis"
                               label="Popis"
                               outlined
                               :rules="popisRule"
@@ -131,7 +147,7 @@
                             color="#28b8ce"
                             rounded
                             dark
-                            @click.stop="upravAktivitu(aktivity)"
+                            @click.stop="upravAktivitu(cinnostiDetail.id)"
                             :disabled="!valid">
                           Upraviť činnosť
                         </v-btn>
@@ -205,69 +221,97 @@
                 </v-container>
               </v-card>
             </v-dialog>
-            <v-simple-table dense class="border">
-              <template v-slot:default>
-                <thead>
-                <tr>
-                  <th class="text-left">Deň</th>
-                  <th class="text-left">Pracovný čas</th>
-                  <th class="text-left">Počet činností</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="x in cinnosti" :key="x.den">
-                  <td>{{ x.den }}</td>
-                  <td>{{ getPracovnyCas(x.zac_hod, x.zac_min, x.kon_hod, x.kon_min) }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            color="black"
-                            dark
-                            v-bind="attrs"
-                            v-on="on"
-                            @click.stop="prepareWorkingHoursUpdate(x.den)"
-                        >
-                          mdi-square-edit-outline
-                        </v-icon>
-                      </template>
-                      <span>Upraviť pracovnú dobu</span>
-                    </v-tooltip>
-                  </td>
-                  <td>
-                    {{ x.cinnosti.length }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            color="black"
-                            dark
-                            v-bind="attrs"
-                            v-on="on"
-                            @click.stop="den = x.den; dialogPridat = true;"
-                        >
-                          mdi-plus-box-outline
-                        </v-icon>
-                      </template>
-                      <span>Pridať činnosť</span>
-                    </v-tooltip>
-                    <v-tooltip  v-if="x.cinnosti.length > 0" bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                            color="black"
-                            dark
-                            v-bind="attrs"
-                            v-on="on"
-                            @click.stop="den = x.den; prepareDetail(x.cinnosti);"
-                        >
-                          mdi-magnify
-                        </v-icon>
-                      </template>
-                      <span>Detail</span>
-                    </v-tooltip>
-                  </td>
-                </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
+            <v-card
+                class="mx-auto"
+            >
+              <v-list>
+                <v-list-group
+                    v-for="item in cinnosti"
+                    :key="item.den"
+                    v-model="item.active"
+                    :prepend-icon="item.action"
+                    no-action
+                >
+                  <template v-slot:activator>
+                    <v-list-item-content>
+                      <v-row>
+                        <v-col>
+                          <v-list-item-title v-text="getDenMesiac(item.den, item.mesiac)"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-list-item-title v-text="getPracovnyCas(item.zac_hod, item.zac_min, item.kon_hod, item.kon_min)"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-list-item-title v-text="item.cinnosti.length"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-icon
+                                  color="black"
+                                  dark
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  @click.stop="prepareWorkingHoursUpdate(item.den)"
+                              >
+                                mdi-square-edit-outline
+                              </v-icon>
+                            </template>
+                            <span>Upraviť pracovnú dobu</span>
+                          </v-tooltip>
+                        </v-col>
+                      </v-row>
+                    </v-list-item-content>
+                  </template>
+                  <v-list-item
+                      v-for="child in item.cinnosti"
+                      :key="child.id"
+                  >
+                    <v-list-item-content>
+                      <v-row>
+                        <v-col>
+                          <v-list-item-title v-text="child.aktivita"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-list-item-title v-text="getPracovnyCas(child.zac_hod, child.zac_min, child.kon_hod, child.kon_min)"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-list-item-title v-text="child.popis"></v-list-item-title>
+                        </v-col>
+                        <v-col>
+                          <v-tooltip  v-if="item.cinnosti.length > 0" bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-icon
+                                  color="black"
+                                  dark
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  @click.stop="den = item.den; prepareDetail(child);"
+                              >
+                                mdi-pencil-box-outline
+                              </v-icon>
+                            </template>
+                            <span>Upraviť</span>
+                          </v-tooltip>
+                        </v-col>
+                      </v-row>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-row>
+                      <v-col class="text-right">
+                        <v-btn
+                            color="info"
+                            submit
+                            class="mb-8"
+                            @click="den = item.den; dialogPridat = true;"
+                        >Pridať činnosť</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-list-item>
+                </v-list-group>
+              </v-list>
+            </v-card>
             <v-btn class="mt-2" color="#28b8ce" rounded dark @click.stop="vymazatDochadzku">Vymazať dochádzku za tento mesiac</v-btn>
           </v-col>
         </v-row>
@@ -322,7 +366,7 @@ export default {
     dochadzka: [],
     spracovanaDochadzka: [],
     cinnosti: [],
-    cinnostiPreMesiac: [],
+    cinnostiDetail: [],
     aktivityZoznam: [],
     aktivita: null,
     popis: null,
@@ -351,9 +395,16 @@ export default {
       }
       return cas;
     },
+    getDenMesiac(den, mesiac){
+      return den + ". " + this.mesiace[mesiac];
+    },
     prepareDetail(cinnosti) {
       this.dialogDetail = true;
-      this.cinnostiPreMesiac = cinnosti;
+      this.popis = cinnosti.popis;
+      this.zac_hod = this.getZacCas(cinnosti);
+      this.kon_hod = this.getKonCas(cinnosti);
+      this.cinnostiDetail = cinnosti;
+      this.aktivita = cinnosti.aktivita;
     },
     getZacCas(aktivity){
       if (aktivity.zac_min < 10) {
@@ -366,11 +417,7 @@ export default {
       } else return aktivity.kon_hod + ":" + aktivity.kon_min;
     },
     vytvoreny(rok, mesiac){
-      if (this.dochadzka.some(x => (x.rok === rok) && (x.mesiac === mesiac))) {
-        return true;
-      } else {
-        return false;
-      }
+      return this.dochadzka.some(x => (x.rok === rok) && (x.mesiac === mesiac));
     },
     async zobrazMesiac(mesiac, rok) {
       this.prehladMesiaca = true;
@@ -393,6 +440,9 @@ export default {
             dochadzka = response.data.list;
           }.bind(this));
       this.dochadzka = dochadzka;
+      if (!this.dochadzka.some(e => e.rok === new Date().getFullYear())) {
+        this.vytvorMesiac(1, new Date().getFullYear());
+      }
       this.spracujMesiaceDochadzky(dochadzka);
     },
     spracujMesiaceDochadzky(dochadzka) {
@@ -426,26 +476,29 @@ export default {
       this.zac_hod = null;
       this.kon_hod = null;
     },
-    async upravAktivitu(aktivity){
+    async upravAktivitu(id){
       this.dialogDetail = false;
+      this.zac_min = this.zac_hod.substring(3);
+      this.zac_hod = this.zac_hod.substring(0,2);
+      this.kon_min = this.kon_hod.substring(3);
+      this.kon_hod = this.kon_hod.substring(0,2);
       const data = {
-        "id" : aktivity.id,
+        "id" : id,
         "rok" : this.rok,
         "mesiac": this.mesiac,
         "den": this.den,
-        "zac_hod": aktivity.zac_hod,
-        "zac_min": aktivity.zac_min,
-        "kon_hod": aktivity.kon_hod,
-        "kon_min": aktivity.kon_min,
+        "zac_hod": this.zac_hod,
+        "zac_min": this.zac_min,
+        "kon_hod": this.kon_hod,
+        "kon_min": this.kon_min,
         "aktivita": this.aktivita,
-        "popis": aktivity.popis
+        "popis": this.popis
       };
-      console.log(data)
-      console.log(this.aktivityZoznam)
       await axios.post('https://app.vykony.ki.fpv.ukf.sk/edituj-cinnost', data, store.state.axios_config)
           .then(function( response ){
             console.log(response.data);
           }.bind(this));
+      await this.zobrazMesiac(this.mesiac, this.rok);
       this.valid = false;
     },
     async pridatCinnost() {
@@ -510,9 +563,6 @@ export default {
   },
   created() {
     this.nacitajMesiaceDochadzky();
-    if (!this.dochadzka.some(e => e.rok === new Date().getFullYear())) {
-      this.vytvorMesiac(1, new Date().getFullYear());
-    }
     this.getAktivity();
   }
 }

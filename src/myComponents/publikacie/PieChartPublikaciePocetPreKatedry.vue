@@ -1,7 +1,7 @@
 <template>
   <v-card class="flex-grow-1">
     <v-toolbar flat >
-      <v-toolbar-title style="white-space: normal;">Top 10 počet publikácií pre jednotlivé katedry</v-toolbar-title>
+      <v-toolbar-title style="white-space: normal;">Top 10 katedier podľa počtu publikácií</v-toolbar-title>
     </v-toolbar>
     <v-divider></v-divider>
     <div class="mt-4 pa-4">

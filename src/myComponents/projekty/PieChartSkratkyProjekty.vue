@@ -1,7 +1,7 @@
 <template>
   <v-card class="flex-grow-1">
     <v-toolbar flat>
-      <v-toolbar-title>Top 10 počet projektov v jednotlivých kategóriách</v-toolbar-title>
+      <v-toolbar-title>Top 10 kategórií podľa počtu projektov</v-toolbar-title>
     </v-toolbar>
     <v-divider></v-divider>
     <div class="mt-4 pa-4">

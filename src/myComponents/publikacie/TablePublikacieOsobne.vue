@@ -6,6 +6,8 @@
           :headers="headers"
           :items="zoznam"
           :items-per-page="5"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
       ></v-data-table>
     </div>
   </div>
@@ -16,6 +18,8 @@ export default {
   name: "TablePublikacieOsobne",
   props: ['zoznam'],
   data: () => ({
+    sortBy: 'rok_vydania',
+    sortDesc: true,
     headers: [
       { text: 'Názov', align: 'start', sortable: false, value: 'nazov'},
       { text: 'Autori', value: 'autori' },
